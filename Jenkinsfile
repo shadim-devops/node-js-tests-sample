@@ -82,9 +82,11 @@ pipeline {
 
         success {
             echo "Pipeline succeeded"
-            mail to: "${env.EMAIL}",
-                 subject: "SUCCESS: Pipeline completed",
-                 body: """Pipeline SUCCESS
+            script {
+                try {
+                    mail to: "${env.EMAIL}",
+                         subject: "SUCCESS: Pipeline completed",
+                         body: """Pipeline SUCCESS
 
 Author: ${env.AUTHOR}
 Version: ${env.VERSION}
@@ -92,13 +94,19 @@ Environment: ${env.ENVIRONMENT}
 Time: ${currentBuild.durationString}
 Result: SUCCESS
 """
+                } catch (e) {
+                    echo "Email failed"
+                }
+            }
         }
 
         failure {
             echo "Pipeline failed"
-            mail to: "${env.EMAIL}",
-                 subject: "FAILED: Pipeline error",
-                 body: """Pipeline FAILED
+            script {
+                try {
+                    mail to: "${env.EMAIL}",
+                         subject: "FAILED: Pipeline error",
+                         body: """Pipeline FAILED
 
 Author: ${env.AUTHOR}
 Version: ${env.VERSION}
@@ -106,6 +114,10 @@ Environment: ${env.ENVIRONMENT}
 Time: ${currentBuild.durationString}
 Result: FAILURE
 """
+                } catch (e) {
+                    echo "Email failed"
+                }
+            }
         }
     }
 }
